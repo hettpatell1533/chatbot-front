@@ -7,20 +7,18 @@ import { useChatContext } from "../useChat";
 
 const Page = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const { messages, latestGeneratedAnswer } = useChatContext();
 
   useEffect(() => {
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop =
-        messagesContainerRef.current.scrollHeight;
+      messagesContainerRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, []);
+  }, [messages, latestGeneratedAnswer]);
 
-  const { messages, latestGeneratedAnswer } = useChatContext();
 
   return (
     <div className="w-full h-full flex flex-col relative">
       <div
-        ref={messagesContainerRef}
         className="flex-1 overflow-y-auto w-full minimal-scrollbar"
       >
         <div className="flex justify-center w-full">
@@ -28,11 +26,11 @@ const Page = () => {
             {messages?.length > 0 ? (
               messages.map((message, index) => {
                 return message.role === "user" ? (
-                  <UserChatBox key={index} question={message} />
+                  <UserChatBox key={index} question={message.content} />
                 ) : (
                   <SystemChatBox
                     key={index}
-                    message={message}
+                    message={message.content}
                     // latestGeneratedAnswer={latestGeneratedAnswer}
                   />
                 );
@@ -46,6 +44,9 @@ const Page = () => {
                 message={latestGeneratedAnswer}
               />
             )}
+
+            <div ref={messagesContainerRef} />
+
           </div>
         </div>
       </div>

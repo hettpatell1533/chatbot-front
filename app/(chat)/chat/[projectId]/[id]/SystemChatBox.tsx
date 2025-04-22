@@ -1,14 +1,86 @@
-import React, { useEffect } from "react";
-import { marked } from "marked";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { atomOneDarkReasonable } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { Copy, CopyCheck } from "lucide-react";
+"use client";
 
-const SystemChatBox = ({ message }: { message: any }) => {
+import React, { useEffect } from "react";
+import RenderCode from "@/app/_components/(chat)/RenderCode";
+
+const parseMessageToComponents = (message: string) => {
+  const renderCodeRegex = /<RenderCode filename='([^']+)'>/g;
+  const endCodeRegex = /<\/RenderCode>/g;
+
+  const elements: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let inCodeBlock = false;
+  let codeContent = "";
+  let match;
+
+  while ((match = renderCodeRegex.exec(message)) !== null || (match = endCodeRegex.exec(message)) !== null) {
+    const start = match.index;
+    
+    // Add any text before this code block
+    if (start > lastIndex) {
+      const beforeCode = message.slice(lastIndex, start).trim();
+      if (beforeCode && !inCodeBlock) {
+        elements.push(
+          <p key={`text-${start}`} className="mb-4 whitespace-pre-wrap">
+            {beforeCode}
+          </p>
+        );
+      }
+    }
+
+    // Handle opening <RenderCode> tag
+    if (match && match[0].startsWith("<RenderCode")) {
+      inCodeBlock = true;
+      codeContent = ""; // Reset the codeContent when a new code block starts
+    }
+
+    // Handle closing </RenderCode> tag
+    if (match && match[0] === "</RenderCode>") {
+      if (inCodeBlock && codeContent) {
+        elements.push(
+          RenderCode(codeContent, match[1])
+        );
+        codeContent = ""; // Reset after rendering code block
+      }
+      inCodeBlock = false;
+    }
+
+    // Accumulate code content between <RenderCode> and </RenderCode>
+    if (inCodeBlock) {
+      codeContent += message.slice(lastIndex, start);
+    }
+
+    lastIndex = start + match[0].length; // Move to the next position after the tag
+  }
+
+  // Add any remaining content (if any)
+  if (lastIndex < message.length) {
+    const remainingText = message.slice(lastIndex).trim();
+    if (remainingText) {
+      elements.push(
+        <p key={`text-end`} className="mb-4 whitespace-pre-wrap">
+          {remainingText}
+        </p>
+      );
+    }
+  }
+
+  // If content after <RenderCode> is missing </RenderCode>, treat it as code
+  if (inCodeBlock && codeContent) {
+    elements.push(
+      RenderCode(codeContent, "Unknown")
+    );
+  }
+
+  return elements;
+};
+
+
+const SystemChatBox = ({ message }: { message: string }) => {
   const [isCopied, setIsCopied] = React.useState(false);
 
   useEffect(() => {
-    if(isCopied) {
+    if (isCopied) {
       const timer = setTimeout(() => {
         setIsCopied(false);
       }, 2000);
@@ -16,44 +88,9 @@ const SystemChatBox = ({ message }: { message: any }) => {
     }
   }, [isCopied]);
 
-  let html: { file: string; code: string }[] = [];
+  const parsed = parseMessageToComponents(message);
 
-  try {
-    const raw = message.content.replace(/```json|```/g, "").trim();
-    
-    const parsed = JSON.parse(raw);
-
-    parsed.forEach((fileObj: Record<string, string>) => {
-      const filePath = Object.keys(fileObj)[0];
-      const code = fileObj[filePath];
-
-      html.push({
-        file: filePath,
-        code: code,
-      });
-    });
-  } catch (error) {
-    console.error("Error parsing content in SystemChatBox:", error);
-  }
-
-  return html.map((item, index) => (
-    <div key={index} className="mb-4">
-      <div className="flex items-center justify-between mt-4 bg-base-150 px-2 py-3">
-        <h2 className="text-base-800 font-medium text-sm">{item.file}</h2>
-        <div className="cursor-pointer" onClick={() => {navigator.clipboard.writeText(item.code); setIsCopied(true)}}>
-          {isCopied ? (
-             <CopyCheck size={14} />
-          ) : (
-            <Copy size={14} />
-          )}
-         
-        </div>
-      </div>
-      <SyntaxHighlighter language="typescript" style={atomOneDarkReasonable}>
-        {item.code}
-      </SyntaxHighlighter>
-    </div>
-  ));
+  return <div className="mt-8">{parsed}</div>;
 };
 
 export default SystemChatBox;

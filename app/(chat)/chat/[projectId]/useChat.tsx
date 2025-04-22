@@ -4,9 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
 interface ChatBox {
-  content: {
-    [key: string]: any;
-  };
+  content: string;
   role: "user" | "assistant";
   timestamp: number;
   id: string;
@@ -48,62 +46,75 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       if(pathname.split("/")[3]){setMessages((prev) => [
         ...prev,
         {
-          content: {question},
+          content: question, 
           role: "user",
           timestamp: Date.now(),
           id: crypto.randomUUID(),
         },
       ]);}
-      const {data, message} = await post_api(`/message`, { prompt: question, projectId: pathname.split("/")[2], roomId: pathname.split("/")[3] });
-      if(pathname.split("/")[3]){
-      setMessages((prev) => [
-        ...prev,
-        {
-          content: data.content,
-          role: "assistant",
-          timestamp: Date.now(),
-          id: crypto.randomUUID(),
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      ])
+        body: JSON.stringify({ prompt: question, projectId: pathname.split("/")[2], roomId: pathname.split("/")[3] }),
+        credentials: "include",
+      });
+
+      if(!response.ok || !response.body) {
+        console.error("Error in askQuestion:", response);
+        return;
       }
-      else{
-        router.push(`/chat/${pathname.split("/")[2]}/${data.room_id}`);
-      }
-      // const reader = res.body.getReader();
-      // const decoder = new TextDecoder();
-      // const randomId = crypto.randomUUID();
 
-      // while (true) {
-      //   const { done, value } = await reader.read();
-
-      //   if (done) break;
-
-      //   const chunk = decoder.decode(value);
-      //   if (messages.find((msg) => msg.id === randomId)) {
-      //     setMessages((prev) =>
-      //       prev.map((msg) => {
-      //         if (msg.id === randomId) {
-      //           return {
-      //             ...msg,
-      //             message: msg.message + chunk,
-      //           };
-      //         }
-      //         return msg;
-      //       })
-      //     );
-      //   } else {
-      //     setMessages((prev) => [
-      //       ...prev,
-      //       {
-      //         message: chunk,
-      //         sender: "system",
-      //         timestamp: Date.now(),
-      //         id: randomId,
-      //       },
-      //     ]);
-      //   }
+      // if(pathname.split("/")[3]){
+      // setMessages((prev) => [
+      //   ...prev,
+      //   {
+      //     content: data.content,
+      //     role: "assistant",
+      //     timestamp: Date.now(),
+      //     id: crypto.randomUUID(),
+      //   },
+      // ])
       // }
-      // router.push(`/chat/${pathname.split("/")[2]}`);
+      // else{
+      //   router.push(`/chat/${pathname.split("/")[2]}/${data.room_id}`);
+      // }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      const randomId = crypto.randomUUID();
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        if (messages.find((msg) => msg.id === randomId)) {
+          setMessages((prev) =>
+            prev.map((msg) => {
+              if (msg.id === randomId) {
+                return {
+                  ...msg,
+                  content: msg.content + chunk,
+                };
+              }
+              return msg;
+            })
+          );
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            {
+              content: chunk,
+              role: "assistant",
+              timestamp: Date.now(),
+              id: randomId,
+            },
+          ]);
+        }
+      }
+      
     } catch (error) {
       console.log(error);
     }
