@@ -54,34 +54,6 @@ interface Project {
   updated_at: string;
 }
 
-const items = [
-  {
-    name: "Dashboard",
-    href: "/",
-  },
-  {
-    name: "Projects",
-    href: "/projects",
-  },
-  {
-    name: "Scrapers",
-    href: "/dashboard/scrapers",
-  },
-];
-
-const teams = [
-  {
-    name: "Team 1",
-    logo: Sparkles,
-    plan: "Free",
-  },
-  {
-    name: "Team 2",
-    logo: Sparkles,
-    plan: "Pro",
-  },
-];
-
 const AppSidebar: React.FC<Props> = () => {
   const pathname = usePathname()
   const { isMobile } = useSidebar();
@@ -140,11 +112,12 @@ const AppSidebar: React.FC<Props> = () => {
                       onClick={() => setActiveTeam(project)}
                       className="gap-2 p-2"
                     >
+                      <Link href={`/chat/${project.id}`} className="flex items-center gap-2">
                       <div className="flex size-6 items-center justify-center rounded-sm border">
                         <Sparkles className="size-4 shrink-0" />
                       </div>
                       {project.name}
-                      <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                      </Link>
                     </DropdownMenuItem>
                   ))}
                   <DropdownMenuSeparator />
@@ -175,7 +148,7 @@ const AppSidebar: React.FC<Props> = () => {
               {rooms.map((item, index) => (
                 <SidebarMenuItem key={index}>
                   <SidebarMenuButton asChild>
-                    <a href={item.id} className="hover:bg-base-200">
+                    <a href={`/chat/${activeTeam?.id}/${item.id}`} className="hover:bg-base-200">
                       <span >{item.name}</span>
                     </a>
                   </SidebarMenuButton>
