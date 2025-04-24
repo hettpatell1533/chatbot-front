@@ -42,22 +42,25 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
   const askQuestion = async (question: string) => {
     try {
+      const newRoomId = crypto.randomUUID()
       setLatestGeneratedAnswer("");
-      if(pathname.split("/")[3]){setMessages((prev) => [
+      if(pathname.split("/")[3]){
+        setMessages((prev) => [
         ...prev,
         {
           content: question, 
           role: "user",
           timestamp: Date.now(),
-          id: crypto.randomUUID(),
+          id: newRoomId,
         },
-      ]);}
+      ]);
+    }
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: question, projectId: pathname.split("/")[2], roomId: pathname.split("/")[3] }),
+        body: JSON.stringify({ prompt: question, projectId: pathname.split("/")[2], roomId: pathname.split("/")[3] ?? newRoomId }),
         credentials: "include",
       });
 

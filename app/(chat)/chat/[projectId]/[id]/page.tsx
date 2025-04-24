@@ -1,19 +1,44 @@
 "use client";
 import ChatInput from "@/app/_components/(chat)/ChatInput";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import UserChatBox from "./UserChatBox";
 import SystemChatBox from "./SystemChatBox";
 import { useChatContext } from "../useChat";
+import { ArrowDown } from "lucide-react";
 
 const Page = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const { messages, latestGeneratedAnswer } = useChatContext();
+  const [isAutoScroll, setIsAutoScroll] = useState(true);
 
   useEffect(() => {
-    if (messagesContainerRef.current) {
+    const container = messagesContainerRef.current;
+
+    const handleScroll = () => {
+      if (!container) return;
+
+      const isAtBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight < 50;
+
+      setIsAutoScroll(isAtBottom);
+    };
+
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isAutoScroll && messagesContainerRef.current) {
       messagesContainerRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, latestGeneratedAnswer]);
+  }, [messages.length, latestGeneratedAnswer, isAutoScroll]);
 
 
   return (

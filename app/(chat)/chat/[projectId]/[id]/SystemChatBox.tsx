@@ -2,65 +2,52 @@
 
 import React, { useEffect } from "react";
 import RenderCode from "@/app/_components/(chat)/RenderCode";
+import * as marked from "marked";
 
 const parseMessageToComponents = (message: string) => {
-  const renderCodeRegex = /<RenderCode filename='([^']+)'>/g;
-  const endCodeTag = "</RenderCode>";
+  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)\n```/g;
 
   const elements: React.ReactNode[] = [];
   let lastIndex = 0;
 
   let match;
-  while ((match = renderCodeRegex.exec(message)) !== null) {
-    const start = match.index;
-    const filename = match[1];
-    const codeStart = renderCodeRegex.lastIndex;
+  while ((match = codeBlockRegex.exec(message)) !== null) {
+    const [fullMatch, language, codeContent] = match;
+    const matchStart = match.index;
 
-    // Add content before <RenderCode> as normal text
-    if (start > lastIndex) {
-      const beforeCode = message.slice(lastIndex, start).trim();
-      if (beforeCode) {
+    // Add text before this code block
+    if (matchStart > lastIndex) {
+      const textBefore = message.slice(lastIndex, matchStart).trim();
+      if (textBefore) {
         elements.push(
-          <p key={`text-${start}`} className="mb-4 whitespace-pre-wrap">
-            {beforeCode}
-          </p>
+          <div key={`text-${matchStart}`} className="mb-4 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: marked.parse(textBefore) }}>
+          </div>
         );
       }
     }
 
-    // Look for the closing </RenderCode>
-    const endIndex = message.indexOf(endCodeTag, codeStart);
-    let codeContent: string;
-
-    if (endIndex !== -1) {
-      // Proper closing tag found
-      codeContent = message.slice(codeStart, endIndex).trim();
-      lastIndex = endIndex + endCodeTag.length;
-    } else {
-      // No closing tag, grab till end
-      codeContent = message.slice(codeStart).trim();
-      lastIndex = message.length;
-    }
-
+    // Push the RenderCode component
     elements.push(
-      RenderCode(codeContent, filename, start)
+      RenderCode(codeContent.trim(), language || "plaintext", matchStart)
     );
+
+    lastIndex = match.index + fullMatch.length;
   }
 
-  // Remaining content after last code block
+  // Add remaining text after last code block
   if (lastIndex < message.length) {
     const remaining = message.slice(lastIndex).trim();
     if (remaining) {
       elements.push(
-        <p key="text-end" className="mb-4 whitespace-pre-wrap">
-          {remaining}
-        </p>
+        <div key="text-end" className="mb-4 whitespace-pre-wrap [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4" dangerouslySetInnerHTML={{ __html: marked.parse(remaining) }}>
+        </div>
       );
     }
   }
 
   return elements;
 };
+
 
 const SystemChatBox = ({ message }: { message: string }) => {
   const [isCopied, setIsCopied] = React.useState(false);
