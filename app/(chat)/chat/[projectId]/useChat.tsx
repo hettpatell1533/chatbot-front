@@ -1,5 +1,5 @@
 "use client";
-import { get_api, post_api } from "@/helper/api";
+import { get_api } from "@/helper/api";
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -16,6 +16,8 @@ interface ChatContextType {
   askQuestion: (question: string) => Promise<void>;
   clearMessages: () => void;
   fetchAllMessages: () => Promise<void>;
+  initialMessage: string;
+  setInitialMessage: (msg: string) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -24,6 +26,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [messages, setMessages] = useState<ChatBox[]>([]);
+  const [initialMessage, setInitialMessage] = useState('');
   const [latestGeneratedAnswer, setLatestGeneratedAnswer] =
     useState<string>("");
 
@@ -35,16 +38,20 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
+    console.log(initialMessage);
     if(pathname.split("/")[3]) {
     fetchAllMessages();
     }
-  }, [pathname]);
+  }, []);
 
   const askQuestion = async (question: string) => {
     try {
       const newRoomId = crypto.randomUUID()
+      if(!pathname.split("/")[3]){
+        setInitialMessage(question);
+        router.replace(`/chat/${pathname.split("/")[2]}/${newRoomId}`)
+      }
       setLatestGeneratedAnswer("");
-      if(pathname.split("/")[3]){
         setMessages((prev) => [
         ...prev,
         {
@@ -54,7 +61,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           id: newRoomId,
         },
       ]);
-    }
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/message`, {
         method: 'POST',
         headers: {
@@ -135,6 +141,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         askQuestion,
         clearMessages,
         fetchAllMessages,
+        initialMessage, setInitialMessage
       }}
     >
       {children}

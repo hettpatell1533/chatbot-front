@@ -1,6 +1,6 @@
 "use client";
 
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -99,7 +99,7 @@ export function Pricing({
               opacity: { duration: 0.5 },
             }}
             className={cn(
-              `rounded-2xl border-[1px] p-6 bg-base-50 text-center lg:flex lg:flex-col lg:justify-center relative`,
+              `rounded-2xl border-[1px] p-6 bg-base-100 text-center lg:flex lg:flex-col lg:justify-center relative`,
               plan.isPopular ? "border-base-400 border-2" : "border-border",
               "flex flex-col",
               !plan.isPopular && "mt-5",
@@ -165,21 +165,20 @@ export function Pricing({
 
               <hr className="w-full my-4" />
 
-              <Link
-                href={plan.href}
+              <Button
                 className={cn(
                   buttonVariants({
                     variant: "outline",
                   }),
-                  "group relative w-full gap-2 overflow-hidden text-lg font-semibold tracking-tighter",
-                  "transform-gpu ring-offset-current transition-all duration-300 ease-out hover:ring-2 hover:ring-primary hover:ring-offset-1 hover:bg-primary hover:text-primary-foreground",
+                  "group relative w-full gap-2 overflow-hidden text-lg tracking-tighter",
+                  "transform-gpu ring-offset-current transition-all duration-300 ease-out hover:bg-base-250 hover:text-base-800",
                   plan.isPopular
                     ? "bg-primary text-primary-foreground"
                     : "bg-background text-foreground"
                 )}
               >
                 {plan.buttonText}
-              </Link>
+              </Button>
               <p className="mt-6 text-xs leading-5 text-muted-foreground">
                 {plan.description}
               </p>

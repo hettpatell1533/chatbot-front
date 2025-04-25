@@ -59,7 +59,7 @@ const AppSidebar: React.FC<Props> = () => {
   const { isMobile } = useSidebar();
   const [projects, setProjects] = React.useState<Project[]>([]);
   const [rooms, setRooms] = React.useState<Room[]>([]);
-  const [activeTeam, setActiveTeam] = React.useState(projects[0]);
+  const [activeTeam, setActiveTeam] = React.useState(projects.find(item => item.id === localStorage.getItem("activeTeam")) ?? projects[0]);
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -112,12 +112,12 @@ const AppSidebar: React.FC<Props> = () => {
                       onClick={() => setActiveTeam(project)}
                       className="gap-2 p-2"
                     >
-                      <Link href={`/chat/${project.id}`} className="flex items-center gap-2">
+                      <a href={`/chat/${project.id}`} className="flex items-center gap-2" onClick={() => localStorage.setItem("activeTeam", project.id)}>
                       <div className="flex size-6 items-center justify-center rounded-sm border">
                         <Sparkles className="size-4 shrink-0" />
                       </div>
                       {project.name}
-                      </Link>
+                      </a>
                     </DropdownMenuItem>
                   ))}
                   <DropdownMenuSeparator />
