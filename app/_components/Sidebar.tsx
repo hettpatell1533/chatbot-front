@@ -30,7 +30,8 @@ import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Plus, Sparkles } 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { get_api } from "@/helper/api";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 // import { Plus } from "lucide-react";
 
 interface Props {
@@ -57,6 +58,7 @@ interface Project {
 const AppSidebar: React.FC<Props> = () => {
   const pathname = usePathname()
   const { isMobile } = useSidebar();
+  const router = useRouter();
   const [projects, setProjects] = React.useState<Project[]>([]);
   const [rooms, setRooms] = React.useState<Room[]>([]);
   const [activeTeam, setActiveTeam] = React.useState(projects.find(item => item.id === localStorage.getItem("activeTeam")) ?? projects[0]);
@@ -74,6 +76,12 @@ const AppSidebar: React.FC<Props> = () => {
     };
     fetchRooms();
   }, [])
+
+  const signOut = async () => {
+    const {message} = await get_api('/auth/logout');
+    toast(message);
+    router.push('/login');
+  }
 
   return (
     <Sidebar collapsible="icon">
@@ -218,7 +226,7 @@ const AppSidebar: React.FC<Props> = () => {
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut />
                     Log out
                   </DropdownMenuItem>

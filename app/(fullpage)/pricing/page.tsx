@@ -37,8 +37,8 @@ const demoPlans = [
     href: "/sign-up",
     isPopular: true,
     isPaymentPlan: true,
-    monthlyPriceId: "price_1Mx9VxH0w2mVzPf7o0HdHJy3",
-    yrearlyPriceId: "price_1Mx9VxH0w2mVzPf7o0HdHJy3"
+    monthlyPriceId: "price_1RIky8SHJm8QTjfD6KrT5mQJ",
+    yrearlyPriceId: "price_1RIkyWSHJm8QTjfDwckQlJX1"
   },
   {
     name: "ENTERPRISE",
@@ -57,8 +57,8 @@ const demoPlans = [
     href: "/contact",
     isPopular: false,
     isPaymentPlan: true,
-    monthlyPriceId: "price_1Mx9VxH0w2mVzPf7o0HdHJy3",
-    yrearlyPriceId: "price_1Mx9VxH0w2mVzPf7o0HdHJy3"
+    monthlyPriceId: "price_1RIkyzSHJm8QTjfDhsUClSBd",
+    yrearlyPriceId: "price_1RIkzWSHJm8QTjfDVqHcDARi"
   },
 ];
 

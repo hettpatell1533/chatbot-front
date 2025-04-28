@@ -10,6 +10,8 @@ import { Check, Star } from "lucide-react";
 import Link from "next/link";
 import { useState, useRef } from "react";
 import NumberFlow from "@number-flow/react";
+import { post_api } from "@/helper/api";
+import { toast } from "sonner";
 
 interface PricingPlan {
   name: string;
@@ -21,6 +23,8 @@ interface PricingPlan {
   buttonText: string;
   href: string;
   isPopular: boolean;
+  monthlyPriceId?: string;
+  yearlyPriceId?: string;
 }
 
 interface PricingProps {
@@ -46,6 +50,19 @@ export function Pricing({
       const y = rect.top + rect.height / 2;
     }
   };
+
+  const handlePricingClick = async (product_id: string) => {
+    const {url, message} = await post_api('/stripe/create-checkout-session', {
+      price_id: product_id, success_url : 'http://localhost:3000/chat', cancel_url : 'http://localhost:3000/pricing'
+    })
+
+    if(url) {
+      window.location.href = url
+    }
+    else{
+      toast.error(message)
+    }
+  }
 
   return (
     <div className="container py-20">
@@ -176,8 +193,9 @@ export function Pricing({
                     ? "bg-primary text-primary-foreground"
                     : "bg-background text-foreground"
                 )}
+                onClick={() => plan.monthlyPriceId && handlePricingClick(plan.monthlyPriceId)}
               >
-                {plan.buttonText}
+                {plan.monthlyPriceId ? plan.buttonText : (<Link href={plan.href}>{plan.buttonText}</Link>)}
               </Button>
               <p className="mt-6 text-xs leading-5 text-muted-foreground">
                 {plan.description}

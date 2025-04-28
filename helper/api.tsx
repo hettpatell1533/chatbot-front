@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 export const post_api = async (url: string, data: unknown, headers?: { [key: string]: string }) => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
@@ -12,7 +14,7 @@ export const post_api = async (url: string, data: unknown, headers?: { [key: str
 
     return await response.json();
   } catch (error) {
-    console.error("Error:", error);
+    toast.error((error as Error).message)
   }
 };
 
@@ -28,7 +30,7 @@ export const get_api = async (url: string, headers?: { [key: string]: string }) 
     });
     return response.json();
   } catch (error) {
-    console.error("Error:", error);
+    toast.error((error as Error).message)
   }
 };
 
@@ -45,7 +47,7 @@ export const put_api = async (url: string, data: unknown, headers?: { [key: stri
     });
     return response.json();
   } catch (error) {
-    console.error("Error:", error);
+    toast.error((error as Error).message)
   }
 };
 
@@ -61,6 +63,6 @@ export const delete_api = async (url: string, headers?: { [key: string]: string 
     });
     return response.json();
   } catch (error) {
-    console.error("Error:", error);
+    toast.error((error as Error).message)
   }
 };
