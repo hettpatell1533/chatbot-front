@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💬 GitHub Repo ChatBot (Powered by Gemini AI)
 
-## Getting Started
+An AI-powered chatbot built to understand and converse about any GitHub repository using Google’s Gemini (Generative AI). Perfect for developers who want to explore codebases, ask implementation questions, or get quick summaries — all with natural language.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 What is this project?
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This project is an **AI-driven developer assistant** that allows users to chat with their GitHub repositories. Using the Google Gemini model, it intelligently answers your technical questions based on the source code of your project.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Once a GitHub repo is connected, the bot fetches the entire codebase, stores it in a structured format, and uses it to guide its AI responses — ensuring contextually accurate, code-specific assistance.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🎯 Why use this?
 
-To learn more about Next.js, take a look at the following resources:
+- 🤖 Ask your repo anything — no need to dig through folders and files
+- 🧠 Get relevant responses grounded in your actual source code
+- 🛠️ Great for onboarding, code reviews, debugging, and documentation understanding
+- 💾 Saves chat history per project
+- 🧩 Multiple chats per project for organized conversations
+- 🔐 Secure login and session management
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🛠️ How it works
 
-## Deploy on Vercel
+### 1. Authentication
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- User signs up or logs in using email and password credentials.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 2. Project Setup
+
+- Create a new project by providing:
+  - **Project name**
+  - **GitHub repository URL**
+  - **GitHub Personal Access Token (PAT)** – only if the repository is private
+
+- Once submitted, the entire repository source code is:
+  - Cloned or fetched
+  - Parsed and stored in the database
+  - Made ready for AI interaction
+
+### 3. Start Chatting
+
+- The user can initiate a new chat within a project
+- For every question, the system:
+  - Retrieves the most relevant code from the repo
+  - Injects it into the system prompt to Gemini
+  - Responds with a well-formatted, context-aware reply
+
+### 4. History & Management
+
+- Chats are saved per project
+- Sidebar displays chat history for quick access
+- Users can start multiple chats per project
+- Secure logout support is available
+
+---
+
+## 🧪 Example Use Cases
+
+- "Where is user authentication implemented in this repo?"
+- "How is the database connection configured?"
+- "Can you summarize how the main controller works?"
+- "Show me where this API endpoint is defined."
+
+---
+
+## 🧰 Tech Stack
+
+- **Frontend:** Next.js / React
+- **Backend:** NestJS
+- **Database:** PostgreSQL or MongoDB (depending on your setup)
+- **Authentication:** JWT or session-based
+- **AI Model:** Google Gemini (Generative AI)
+- **GitHub Integration:** GitHub REST API with PAT support
+
+---
