@@ -60,20 +60,19 @@ Once a GitHub repo is connected, the bot fetches the entire codebase, stores it 
 
 ## 🧪 Example Use Cases
 
-- "Where is user authentication implemented in this repo?"
-- "How is the database connection configured?"
-- "Can you summarize how the main controller works?"
-- "Show me where this API endpoint is defined."
+- "Add product module and make it compatible with other modules."
+- "Refactor Cart logic as it is not running now."
+- "Can you add a types in project."
+- "Add Database connection code into db.config file."
 
 ---
 
 ## 🧰 Tech Stack
 
-- **Frontend:** Next.js / React
+- **Frontend:** Next.js
 - **Backend:** NestJS
-- **Database:** PostgreSQL or MongoDB (depending on your setup)
+- **Database:** PostgreSQL
 - **Authentication:** JWT or session-based
 - **AI Model:** Google Gemini (Generative AI)
-- **GitHub Integration:** GitHub REST API with PAT support
 
 ---
